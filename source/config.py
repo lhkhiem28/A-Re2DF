@@ -1,8 +1,8 @@
 import argparse
 
 def parse_args_llm():
-    parser = argparse.ArgumentParser(description="Re3DF")
-    parser.add_argument("--project", type=str, default="Re3DF")
+    parser = argparse.ArgumentParser(description="Re2DF")
+    parser.add_argument("--project", type=str, default="Re2DF")
     parser.add_argument("--seed", type=int, default=0)
 
     # LLM related
@@ -19,7 +19,7 @@ def parse_args_llm():
     parser.add_argument("--refine_steps", type=int, default=3)
     parser.add_argument("--hit_thres", type=int, default=0)
     parser.add_argument('--doc_refer', action='store_true', default=False)
-    parser.add_argument("--path", type=str, default='../Re3DF-datasets')
+    parser.add_argument("--path", type=str, default='../Re2DF-datasets')
     parser.add_argument("--data", type=str)
     parser.add_argument("--split", type=str, default="test")
     parser.add_argument("--task", type=str, default="Label")
