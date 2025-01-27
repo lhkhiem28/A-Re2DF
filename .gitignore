@@ -1,7 +1,7 @@
 __pycache__/
 output/
 *.o*
-*.job
+# *.job
 # *.sh*
 wandb/
 

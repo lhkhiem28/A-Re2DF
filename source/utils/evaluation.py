@@ -234,10 +234,7 @@ def get_scores_generation(eval_output, path, tokenizer, data, selfies=False, hit
         prop = data.split("/")[-1]
         validities = []
         hits = []
-        distances = []
         Morgan_sims = []
-        MACCS_sims = []
-        RDK_sims = []
         valid_preds, valid_labels = [], []
         if "single" in data:
             for pred, label in tqdm.tqdm(zip(preds, labels)):
@@ -272,10 +269,7 @@ def get_scores_generation(eval_output, path, tokenizer, data, selfies=False, hit
                     if prop == "QED-":
                         hits.append(prop_pred + task2thres[prop][hit_thres][0] < prop_label)
 
-                    distances.append(distance(pred, label))
                     Morgan_sims.append(DataStructs.TanimotoSimilarity(AllChem.GetMorganFingerprint(mol_pred, 2), AllChem.GetMorganFingerprint(mol_label, 2)))
-                    MACCS_sims.append(DataStructs.FingerprintSimilarity(MACCSkeys.GenMACCSKeys(mol_pred), MACCSkeys.GenMACCSKeys(mol_label), metric=DataStructs.TanimotoSimilarity))
-                    RDK_sims.append(DataStructs.FingerprintSimilarity(Chem.RDKFingerprint(mol_pred), Chem.RDKFingerprint(mol_label), metric=DataStructs.TanimotoSimilarity))
                 except:
                     validities.append(0)
         if "multi" in data:
@@ -326,13 +320,10 @@ def get_scores_generation(eval_output, path, tokenizer, data, selfies=False, hit
                         if prop == "QED-":
                             hits.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred + task2thres[prop][hit_thres][0] < prop_label)
 
-                    distances.append(distance(pred, label))
                     Morgan_sims.append(DataStructs.TanimotoSimilarity(AllChem.GetMorganFingerprint(mol_pred, 2), AllChem.GetMorganFingerprint(mol_label, 2)))
-                    MACCS_sims.append(DataStructs.FingerprintSimilarity(MACCSkeys.GenMACCSKeys(mol_pred), MACCSkeys.GenMACCSKeys(mol_label), metric=DataStructs.TanimotoSimilarity))
-                    RDK_sims.append(DataStructs.FingerprintSimilarity(Chem.RDKFingerprint(mol_pred), Chem.RDKFingerprint(mol_label), metric=DataStructs.TanimotoSimilarity))
                 except:
                     validities.append(0)
-        return 100*sum(hits)/len(validities), np.mean(distances), 100*np.mean(MACCS_sims), 100*np.mean(Morgan_sims), 100*sum(validities)/len(validities)
+        return 100*sum(hits)/len(validities), 100*np.mean(Morgan_sims), 100*sum(validities)/len(validities)
     else:
         pass
 

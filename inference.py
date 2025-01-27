@@ -623,7 +623,7 @@ def main(args):
             *scores
         ))
     elif "MModify" in args.data:
-        print("Hit: {:.2f} Levenshtein: {:.4f} MACCS-FTS: {:.2f} Morgan-FTS: {:.2f} Validity: {:.2f} Validity check: {:.2f}".format(
+        print("Hit: {:.2f} Morgan-FTS: {:.2f} Validity: {:.2f} Validity check: {:.2f}".format(
             *scores, 100*validity_work/total_work
         ))
     else:
