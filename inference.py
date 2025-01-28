@@ -52,7 +52,7 @@ def main(args):
     progress_bar_test = tqdm.tqdm(range(len(test_dataset)))
 
     code, code_error = 0, 0
-    validity_work, total_work = 0, 0
+    validity_work, total_work = 0, 1e-8
     for index in range(len(test_dataset)):
         batch = test_dataset[index]
         with torch.no_grad():
@@ -623,7 +623,7 @@ def main(args):
             *scores
         ))
     elif "MModify" in args.data:
-        print("Hit: {:.2f} Morgan-FTS: {:.2f} Validity: {:.2f} Validity check: {:.2f}".format(
+        print("Hit: {:.2f} Hit@0.4: {:.2f} Hit@0.5: {:.2f} Morgan-FTS: {:.2f} Validity: {:.2f} Validity check: {:.2f}".format(
             *scores, 100*validity_work/total_work
         ))
     else:
