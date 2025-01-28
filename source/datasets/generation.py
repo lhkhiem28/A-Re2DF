@@ -22,7 +22,7 @@ class DatasetGeneration(Dataset):
             self.questions = self.questions.sample(n=100, random_state=0).reset_index(drop=True)
         elif "MModify" in data:
             DB_path = "/".join(data.split("/")[:-1])
-            self.DB = pd.read_csv(f'{path}/{DB_path}/DB.csv')
+            self.DB = pd.read_csv(f'{path}/{DB_path}/database.csv')
             self.DB["mol"] = self.DB["SMILES"].apply(Chem.MolFromSmiles)
             prop = data.split("/")[-1]
             if "single" in data:
