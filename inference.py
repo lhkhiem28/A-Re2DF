@@ -96,18 +96,7 @@ def main(args):
                         output = model.inference(listize_fn(batch))
                         output["pred"] = [p.strip() if "->" not in p else p.split('->')[1].strip() for p in output["pred"]]
                         output["pred"] = [p.strip() if "becomes" not in p else p.split('becomes')[1].strip() for p in output["pred"]]
-                        if "MDesign" in args.data:
-                            if i < max_steps:
-                                feedback_batch = {
-                                    'id': 0,
-                                    'prompt': ori_prompt + output["pred"][0] + '\nEvaluate the designed molecule on its chemical validity and the desired specifications regarding functional groups according to the given description. Please provide two pieces of feedback. Start your feedback about validity with the phrase "Validity:", and start your feedback about the desired specifications with the phrase "Desired specifications:".',
-                                    'label': None,
-                                }
-                                feedback_output = model.inference(listize_fn(feedback_batch))['pred'][0].strip().replace("\n\n", "\n")
-                                batch['prompt'] = ori_prompt + output["pred"][0] + f"\n\nImprove the designed molecule based on the following feedback:\n{feedback_output}\nPlease answer with only the SMILES string of your designed molecule."
-                            else:
-                                eval_output.append(output)
-                        elif "MModify" in args.data:
+                        if "MModify" in args.data:
                             if i < max_steps:
                                 feedback_batch = {
                                     'id': 0,
@@ -131,31 +120,7 @@ def main(args):
                         output = model.inference(listize_fn(batch))
                         output["pred"] = [p.strip() if "->" not in p else p.split('->')[1].strip() for p in output["pred"]]
                         output["pred"] = [p.strip() if "becomes" not in p else p.split('becomes')[1].strip() for p in output["pred"]]
-                        if "MDesign" in args.data:
-                            if i < max_steps:
-                                try:
-                                    validity_feedback = get_validity_feedback(output["pred"][0], code_executor_agent)
-                                    if "Error" in validity_feedback:
-                                        feedback_output = "Validity:\n{}".format(validity_feedback)
-                                    else:
-                                        mol_pred, mol_label = Chem.MolFromSmiles(output["pred"][0]), Chem.MolFromSmiles(batch["smiles"])
-                                        fgs_pred, fgs_label = count_fgs(mol_pred), count_fgs(mol_label)
-                                        hit, _, str_pred, str_label = check_funchit(fgs_pred, fgs_label)
-                                        if hit:
-                                            eval_output.append(output)
-                                            break
-                                        else:
-                                            try:
-                                                specifications_feedback = f"The designed molecule has {str_pred} while the required molecule should have {str_label}. Therefore, the designed molecule is not correct."
-                                                feedback_output = "Validity:\n{}\nDesired specifications:\n{}".format(validity_feedback, specifications_feedback)
-                                            except:
-                                                pass
-                                except:
-                                    continue
-                                batch['prompt'] = ori_prompt + output["pred"][0] + f"\n\nImprove the designed molecule based on the following feedback:\n{feedback_output}\nPlease answer with only the SMILES string of your designed molecule."
-                            else:
-                                eval_output.append(output)
-                        elif "MModify" in args.data:
+                        if "MModify" in args.data:
                             if i < max_steps:
                                 try:
                                     validity_feedback = get_validity_feedback(output["pred"][0], code_executor_agent)
@@ -618,10 +583,6 @@ def main(args):
             print("Coding Error: {:.2f}%".format(
                 100*(code_error/code)
             ))
-    elif "MDesign" in args.data:
-        print("ExactMatch: {:.4f} Levenshtein: {:.4f} BLEU-2: {:.4f} BLEU-4: {:.4f} MACCS-FTS: {:.4f} Morgan-FTS: {:.4f} FCD: {:.4f} Validity: {:.4f}".format(
-            *scores
-        ))
     elif "MModify" in args.data:
         print("Hit: {:.2f} Hit@0.4: {:.2f} Hit@0.5: {:.2f} Morgan-FTS: {:.2f} Validity: {:.2f} Validity check: {:.2f}".format(
             *scores, 100*validity_work/total_work

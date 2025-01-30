@@ -187,49 +187,6 @@ def get_scores_generation(eval_output, path, tokenizer, data, selfies=False, hit
             average = "macro", 
         )
         return acc, f1
-    elif "MDesign" in data:
-        validities = []
-        matches = []
-        distances = []
-        hypotheses = []
-        references = []
-        Morgan_sims = []
-        MACCS_sims = []
-        RDK_sims = []
-        valid_preds, valid_labels = [], []
-        for pred, label in tqdm.tqdm(zip(preds, labels)):
-            try:
-                if selfies:
-                    pred, label = sf.decoder(pred), sf.decoder(label)
-                mol_pred, mol_label = Chem.MolFromSmiles(pred), Chem.MolFromSmiles(label)
-                pred, label = Chem.MolToSmiles(mol_pred, isomericSmiles=False, canonical=True), Chem.MolToSmiles(mol_label, isomericSmiles=False, canonical=True)
-                valid_preds.append(pred), valid_labels.append(label)
-                inchi_pred, inchi_label = Chem.MolToInchi(mol_pred), Chem.MolToInchi(mol_label)
-                validities.append(1)
-
-                if inchi_pred == inchi_label:
-                    matches.append(1)
-                else:
-                    matches.append(0)
-
-                distances.append(distance(pred, label))
-                pred_tokens, label_tokens = tokenizer.tokenize(pred), tokenizer.tokenize(label)
-                pred_tokens, label_tokens = list(filter(('[PAD]').__ne__, pred_tokens)), list(filter(('[PAD]').__ne__, label_tokens))
-                pred_tokens, label_tokens = list(filter(('[PAD]').__ne__, pred_tokens)), list(filter(('[PAD]').__ne__, label_tokens))
-                pred_tokens, label_tokens = list(filter(('[PAD]').__ne__, pred_tokens)), list(filter(('[PAD]').__ne__, label_tokens))
-                hypotheses.append(pred_tokens), references.append([label_tokens])
-                Morgan_sims.append(DataStructs.TanimotoSimilarity(AllChem.GetMorganFingerprint(mol_pred, 2), AllChem.GetMorganFingerprint(mol_label, 2)))
-                MACCS_sims.append(DataStructs.FingerprintSimilarity(MACCSkeys.GenMACCSKeys(mol_pred), MACCSkeys.GenMACCSKeys(mol_label), metric=DataStructs.TanimotoSimilarity))
-                RDK_sims.append(DataStructs.FingerprintSimilarity(Chem.RDKFingerprint(mol_pred), Chem.RDKFingerprint(mol_label), metric=DataStructs.TanimotoSimilarity))
-            except:
-                validities.append(0)
-
-        bleu2 = corpus_bleu(references, hypotheses, weights=(.5,.5))
-        bleu4 = corpus_bleu(references, hypotheses, weights=(.25,.25,.25,.25))
-
-        fcd = FCD()(valid_preds, valid_labels)
-
-        return sum(matches)/len(matches), np.mean(distances), bleu2, bleu4, np.mean(MACCS_sims), np.mean(Morgan_sims), fcd, sum(validities)/len(validities)
     elif "MModify" in data:
         prop = data.split("/")[-1]
         validities = []

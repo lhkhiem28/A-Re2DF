@@ -17,10 +17,9 @@ class DatasetGeneration(Dataset):
         self.k_shot = k_shot
         self.prompting = prompting
         self.questions = pd.read_csv(f'{path}/{data}/{split}.csv')
+        self.questions = self.questions.sample(n=200, random_state=0).reset_index(drop=True) if len(self.questions) > 200 else self.questions
         self.questions["SMILES"] = self.questions["SMILES"].str.replace('\\\\', '\\')
-        if "MDesign" in data:
-            self.questions = self.questions.sample(n=100, random_state=0).reset_index(drop=True)
-        elif "MModify" in data:
+        if "MModify" in data:
             DB_path = "/".join(data.split("/")[:-1])
             self.DB = pd.read_csv(f'{path}/{DB_path}/database.csv')
             self.DB["mol"] = self.DB["SMILES"].apply(Chem.MolFromSmiles)
@@ -90,39 +89,6 @@ class DatasetGeneration(Dataset):
                 'prompt': f'{question}\n{smiles}',
                 'label': str(item[self.task]),
             }
-        elif "MDesign" in self.data:
-            if self.k_shot > 0:
-                if self.prompting == "None":
-                    question = f'{item["Text"]} Please answer with only the SMILES string of your designed molecule.'
-                    Examples = self.examples[f'{self.k_shot}_shot']
-                    question += f'\nExamples:{Examples}'
-                    description = f'\nQuestion:\nDescription:{item["Description"]}\nAnswer:'
-                elif self.prompting == "retrieve":
-                    question = f'{item["Text"]} Please answer with only the SMILES string of your designed molecule.'
-                    Examples = self.retrieve_Examples(item["Description"])
-                    question += f'\nExamples:{Examples}'
-                    description = f'\nQuestion:\nDescription:{item["Description"]}\nAnswer:'
-                else:
-                    pass
-            else:
-                question = f'{item["Text"]} Please answer with only the SMILES string of your designed molecule.'
-                description = f'\nDescription:{item["Description"]}\nAnswer:'
-            if not self.selfies:
-                return {
-                    'id': index,
-                    'smiles': item["SMILES"],
-                    'description': item["Description"],
-                    'prompt': f'{question}\n{description}',
-                    'label': item["SMILES"],
-                }
-            else:
-                return {
-                    'id': index,
-                    'smiles': sf.encoder(item["SMILES"]),
-                    'description': item["Description"],
-                    'prompt': f'{question}\n{description}',
-                    'label': sf.encoder(item["SMILES"]),
-                }
         elif "MModify" in self.data:
             if self.k_shot > 0:
                 pass
