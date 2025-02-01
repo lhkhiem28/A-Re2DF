@@ -9,7 +9,7 @@ def parse_args_llm():
     parser.add_argument("--model_name", type=str, default='baseline_llm')
     parser.add_argument("--llm_model_name", type=str, default='llama-3.1-70b')
     parser.add_argument("--llm_frozen", type=str, default='True')
-    parser.add_argument("--n_gpus", type=int, default=1)
+    parser.add_argument("--n_gpus", type=int, default=2)
 
     # Model Training
     parser.add_argument("--dataset", type=str, default='generation')
