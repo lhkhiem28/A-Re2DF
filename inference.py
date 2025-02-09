@@ -576,15 +576,15 @@ def main(args):
         selfies = "biot5" in args.llm_model_name, hit_thres = args.hit_thres
     )
     if "MPP" in args.data:
-        print("Accuracy: {:.4f} F1: {:.4f}".format(
+        print("Accuracy: {:05.4f} F1: {:05.4f}".format(
             *scores
         ))
         if args.prompting == "react":
-            print("Coding Error: {:.2f}%".format(
+            print("Coding Error: {:05.2f}%".format(
                 100*(code_error/code)
             ))
     elif "MModify" in args.data:
-        print("Hit: {:.2f} Hit@0.4: {:.2f} Hit@0.5: {:.2f} Morgan-FTS: {:.2f} Validity: {:.2f} Validity check: {:.2f}".format(
+        print("Hit: {:05.2f} Hit@0.4: {:05.2f} Hit@0.5: {:05.2f} Morgan-FTS: {:05.2f} Validity: {:05.2f} Validity check: {:05.2f}".format(
             *scores, 100*validity_work/total_work
         ))
     else:
