@@ -1,5 +1,4 @@
 import tqdm
-import selfies as sf
 import numpy as np
 import pandas as pd
 import json
@@ -8,11 +7,10 @@ from rank_bm25 import BM25Okapi
 from source.utils.evaluation import *
 
 class DatasetGeneration(Dataset):
-    def __init__(self, path, data, split, task="", k_shot=0, prompting="None", selfies=False, hit_thres=0):
+    def __init__(self, path, data, split, task="", k_shot=0, prompting="None", hit_thres=0):
         super().__init__()
         self.data = data
         self.task = task
-        self.selfies = selfies
         self.hit_thres = hit_thres
         self.k_shot = k_shot
         self.prompting = prompting

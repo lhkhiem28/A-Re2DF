@@ -1,5 +1,4 @@
 import tqdm
-import selfies as sf
 import numpy as np
 import pandas as pd
 from sklearn import metrics
@@ -157,7 +156,7 @@ for prop, func in prop_pred:
     prop2func[prop] = func
 task2func = {k:prop2func[task2prop[k]] for k in task2prop.keys()}
 
-def get_scores_generation(eval_output, path, tokenizer, data, selfies=False, hit_thres=0):
+def get_scores_generation(eval_output, path, tokenizer, data, hit_thres=0):
     # eval_output is a list of dicts
     df = pd.concat([pd.DataFrame(d) for d in eval_output])
     # save to csv
@@ -198,8 +197,6 @@ def get_scores_generation(eval_output, path, tokenizer, data, selfies=False, hit
         if "single" in data:
             for pred, label in tqdm.tqdm(zip(preds, labels)):
                 try:
-                    if selfies:
-                        pred, label = sf.decoder(pred), sf.decoder(label)
                     mol_pred, mol_label = Chem.MolFromSmiles(pred), Chem.MolFromSmiles(label)
                     pred, label = Chem.MolToSmiles(mol_pred, isomericSmiles=False, canonical=True), Chem.MolToSmiles(mol_label, isomericSmiles=False, canonical=True)
                     valid_preds.append(pred), valid_labels.append(label)
@@ -256,8 +253,6 @@ def get_scores_generation(eval_output, path, tokenizer, data, selfies=False, hit
             logp, prop = prop[:5], prop[5:]
             for pred, label in tqdm.tqdm(zip(preds, labels)):
                 try:
-                    if selfies:
-                        pred, label = sf.decoder(pred), sf.decoder(label)
                     mol_pred, mol_label = Chem.MolFromSmiles(pred), Chem.MolFromSmiles(label)
                     pred, label = Chem.MolToSmiles(mol_pred, isomericSmiles=False, canonical=True), Chem.MolToSmiles(mol_label, isomericSmiles=False, canonical=True)
                     valid_preds.append(pred), valid_labels.append(label)

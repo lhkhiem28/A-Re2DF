@@ -37,7 +37,7 @@ def main(args):
 
     # Step 1: Build Dataset
     test_dataset = load_dataset[args.dataset](path = args.path, data = args.data, split = "test", task = args.task, k_shot = args.k_shot, prompting = args.prompting, 
-        selfies = "biot5" in args.llm_model_name, hit_thres = args.hit_thres
+        hit_thres = args.hit_thres
     )
 
     # Step 2: Build Model
@@ -67,9 +67,6 @@ def main(args):
                         prompt = batch["prompt"]
                         if "molt5" in args.llm_model_name:
                             prompt = prompt.split("\nDescription:")[1].split("\nAnswer:")[0]
-                        if "biot5" in args.llm_model_name:
-                            prompt = prompt.split("\nDescription:")[1].split("\nAnswer:")[0]
-                            prompt = f'Definition: You are given a molecule description in English. Your job is to generate the molecule SELFIES that fits the description.\n\nNow complete the following example -\nInput: {prompt}\nOutput: '
                         if "text-chemt5" in args.llm_model_name:
                             prompt = prompt.split("\nDescription:")[1].split("\nAnswer:")[0]
                             prompt = f'Write in SMILES the described molecule: {prompt}'
@@ -573,7 +570,7 @@ def main(args):
     os.makedirs(f'{args.output_dir}/inference/{args.data}', exist_ok=True)
     path = f'{args.output_dir}/inference/{args.data}/{args.model_name}_{args.llm_model_name}_llm_frozen{args.llm_frozen}_{args.split}_k_shot{args.k_shot}_{args.prompting}_{args.refine}_refine_steps{args.refine_steps}_{args.hit_thres}.csv'
     scores = eval_funcs[args.dataset](eval_output, path, model.tokenizer, args.data, 
-        selfies = "biot5" in args.llm_model_name, hit_thres = args.hit_thres
+        hit_thres = args.hit_thres
     )
     if "MPP" in args.data:
         print("Accuracy: {:05.4f} F1: {:05.4f}".format(
