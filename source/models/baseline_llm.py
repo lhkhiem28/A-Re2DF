@@ -95,7 +95,7 @@ class BaselineLLM(torch.nn.Module):
     def forward(self, samples):
         # encode description, prompts and labels
         prompts = self.tokenizer(samples["prompt"], add_special_tokens=False)
-        labels = self.tokenizer(samples["label"], add_special_tokens=False)
+        labels = self.tokenizer(samples['label'], add_special_tokens=False)
 
         # encode special tokens
         eos_tokens = self.tokenizer(self.EOS, add_special_tokens=False)
@@ -122,7 +122,7 @@ class BaselineLLM(torch.nn.Module):
         # pad inputs_embeds
         max_length = max([x.shape[0] for x in batch_inputs_embeds])
         for i in range(batch_size):
-            pad_length = max_length-batch_inputs_embeds[i].shape[0]
+            pad_length = max_length - batch_inputs_embeds[i].shape[0]
             batch_inputs_embeds[i] = torch.cat([pad_embeds.repeat(pad_length, 1), batch_inputs_embeds[i]])
             batch_attention_mask[i] = [0]*pad_length + batch_attention_mask[i]
             batch_label_input_ids[i] = [self.IGNORE_INDEX] * pad_length+batch_label_input_ids[i]
@@ -188,7 +188,7 @@ class BaselineLLM(torch.nn.Module):
 
         return {'id': samples['id'],
                 'pred': [p.strip() for p in pred],
-                'label': samples['label'],
+                'label': samples['smiles'],
         }
 
     def print_trainable_params(self):

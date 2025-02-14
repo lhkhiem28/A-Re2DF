@@ -99,7 +99,7 @@ class DatasetGeneration(Dataset):
                 'id': index,
                 'smiles': item["SMILES"],
                 'prompt': f'{question}\n{smiles}',
-                'label': item["SMILES"],
+                'label': item["modifiedSMILES"],
             }
         else:
             pass
