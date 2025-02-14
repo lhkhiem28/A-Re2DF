@@ -60,10 +60,10 @@ class BaselineLLM(torch.nn.Module):
             print(f"{args.llm_model_path} has been factorized for training!")
             model = prepare_model_for_int8_training(model)
 
-            lora_r: int = 2
+            lora_r: int = 8
             lora_alpha: int = 16
             lora_dropout: float = 0.1
-            lora_target_modules = ['q_proj', 'k_proj', 'v_proj']
+            lora_target_modules = ['k_proj', 'v_proj', 'q_proj', 'o_proj']
             config = LoraConfig(
                 r=lora_r,
                 lora_alpha=lora_alpha,

@@ -111,7 +111,7 @@ def main(args):
                     ori_prompt = batch['prompt']
                     if args.k_shot > 0:
                         ori_prompt = re.split(r'Examples:|Question:', ori_prompt)[0] + re.split(r'Examples:|Question:', ori_prompt)[2]
-                    max_steps = args.refine_steps + 1
+                    max_steps = args.refine_steps
                     for i in range(1, max_steps + 1):
                         total_work += 1
                         output = model.inference(listize_fn(batch))
@@ -257,7 +257,7 @@ def main(args):
                 elif args.refine == "molt-retrieve":
                     prop = args.data.split("/")[-1]
                     ori_prompt = batch['prompt']
-                    max_steps = args.refine_steps + 1
+                    max_steps = args.refine_steps
                     for i in range(1, max_steps + 1):
                         total_work += 1
                         output = model.inference(listize_fn(batch))

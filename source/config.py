@@ -24,14 +24,11 @@ def parse_args_llm():
     parser.add_argument("--split", type=str, default="test")
     parser.add_argument("--task", type=str, default="Label")
     parser.add_argument("--lr", type=float, default=1e-5)
-    parser.add_argument("--wd", type=float, default=0.05)
-    parser.add_argument("--batch_size", type=int, default=6)
-    parser.add_argument("--grad_steps", type=int, default=2)
-    parser.add_argument("--num_epochs", type=int, default=1)
-    parser.add_argument("--warmup_epochs", type=float, default=1)
+    parser.add_argument("--wd", type=float, default=0)
+    parser.add_argument("--batch_size", type=int, default=32)
+    parser.add_argument("--num_epochs", type=int, default=2)
 
     # Inference
-    parser.add_argument("--eval_batch_size", type=int, default=1)
     parser.add_argument("--max_new_tokens", type=int, default=512)
 
     # Checkpoint
