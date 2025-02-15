@@ -15,7 +15,10 @@ class DatasetGeneration(Dataset):
         self.k_shot = k_shot
         self.prompting = prompting
         self.questions = pd.read_csv(f'{path}/{data}/{split}.csv')
-        self.questions = self.questions.sample(n=200, random_state=0).reset_index(drop=True) if len(self.questions) > 200 else self.questions
+        if split == "test":
+            self.questions = self.questions.sample(n=500, random_state=0).reset_index(drop=True) if len(self.questions) > 500 else self.questions
+        elif split == "train":
+            self.questions = self.questions.sample(n=5000, random_state=0).reset_index(drop=True) if len(self.questions) > 5000 else self.questions
         self.questions["SMILES"] = self.questions["SMILES"].str.replace('\\\\', '\\')
         if "MModify" in data:
             DB_path = "/".join(data.split("/")[:-1])
