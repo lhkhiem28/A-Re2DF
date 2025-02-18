@@ -97,6 +97,7 @@ def main(args):
                             if i < max_steps:
                                 feedback_batch = {
                                     'id': 0,
+                                    'smiles': None,
                                     'prompt': ori_prompt + output["pred"][0] + '\nEvaluate the modified molecule on its chemical validity and the desired property according to the requirement. Please provide two pieces of feedback. Start your feedback about validity with the phrase "Validity:", and start your feedback about the desired property with the phrase "Desired property:".',
                                     'label': None,
                                 }

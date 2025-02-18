@@ -7,7 +7,7 @@ def parse_args_llm():
 
     # LLM related
     parser.add_argument("--model_name", type=str, default='baseline_llm')
-    parser.add_argument("--llm_model_name", type=str, default='llama-3.1-70b')
+    parser.add_argument("--llm_model_name", type=str)
     parser.add_argument("--llm_frozen", type=str, default='True')
     parser.add_argument("--n_gpus", type=int, default=2)
 
@@ -26,7 +26,7 @@ def parse_args_llm():
     parser.add_argument("--lr", type=float, default=1e-5)
     parser.add_argument("--wd", type=float, default=0)
     parser.add_argument("--batch_size", type=int, default=32)
-    parser.add_argument("--num_epochs", type=int, default=2)
+    parser.add_argument("--num_epochs", type=int, default=4)
 
     # Inference
     parser.add_argument("--max_new_tokens", type=int, default=512)
