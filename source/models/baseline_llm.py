@@ -22,7 +22,7 @@ class BaselineLLM(torch.nn.Module):
             self.EOS_USER = '<|eot_id|><|start_header_id|>assistant<|end_header_id|>'
             self.EOS = '<|end_of_text|>'
             self.IGNORE_INDEX = -100
-        elif "Qwen" in args.llm_model_path:
+        if "Qwen2.5" in args.llm_model_path or "SmolLM2" in args.llm_model_path:
             self.BOS = '<|im_start|>user\n'
             self.EOS_USER = '<|im_end|>\n<|im_start|>assistant\n'
             self.EOS = '<|im_end|>'
@@ -60,10 +60,10 @@ class BaselineLLM(torch.nn.Module):
             print(f"{args.llm_model_path} has been factorized for training!")
             model = prepare_model_for_int8_training(model)
 
-            lora_r: int = 8
+            lora_r: int = args.lora_r
             lora_alpha: int = 16
             lora_dropout: float = 0.1
-            lora_target_modules = ['k_proj', 'v_proj', 'q_proj', 'o_proj']
+            lora_target_modules = ['k_proj', 'v_proj', 'q_proj', 'o_proj', 'gate_proj', 'up_proj', 'down_proj']
             config = LoraConfig(
                 r=lora_r,
                 lora_alpha=lora_alpha,
