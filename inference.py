@@ -582,7 +582,7 @@ def main(args):
                 100*(code_error/code)
             ))
     elif "MModify" in args.data:
-        print("Hit: {:05.2f} Hit@0.4: {:05.2f} Hit@0.5: {:05.2f} Morgan-FTS: {:05.2f} Validity: {:05.2f} Validity check: {:05.2f}".format(
+        print("Hit: {:05.2f} Hit@0.5: {:05.2f} Morgan-FTS: {:05.2f} Validity: {:05.2f} Validity check: {:05.2f}".format(
             *scores, 100*validity_work/total_work
         ))
     else:

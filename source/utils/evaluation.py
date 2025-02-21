@@ -74,7 +74,6 @@ def get_scores_generation(eval_output, path, tokenizer, data, hit_thres=0):
         prop = data.split("/")[-1]
         validities = []
         hits = []
-        hits4 = []
         hits5 = []
         Morgan_sims = []
         valid_preds, valid_labels = [], []
@@ -93,43 +92,33 @@ def get_scores_generation(eval_output, path, tokenizer, data, hit_thres=0):
                     prop_pred, prop_label = task2func[prop](mol_pred), task2func[prop](mol_label)
                     if prop == "LogP+":
                         hits.append(prop_pred > prop_label + task2thres[prop][hit_thres][0])
-                        hits4.append(prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.4)
                         hits5.append(prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.5)
                     if prop == "LogP-":
                         hits.append(prop_pred + task2thres[prop][hit_thres][0] < prop_label)
-                        hits4.append(prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.4)
                         hits5.append(prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.5)
                     if prop == "TPSA+":
                         hits.append(prop_pred > prop_label + task2thres[prop][hit_thres][0])
-                        hits4.append(prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.4)
                         hits5.append(prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.5)
                     if prop == "TPSA-":
                         hits.append(prop_pred + task2thres[prop][hit_thres][0] < prop_label)
-                        hits4.append(prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.4)
                         hits5.append(prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.5)
                     if prop == "HBD+":
                         hits.append(prop_pred > prop_label + task2thres[prop][hit_thres][0])
-                        hits4.append(prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.4)
                         hits5.append(prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.5)
                     if prop == "HBD-":
                         hits.append(prop_pred + task2thres[prop][hit_thres][0] < prop_label)
-                        hits4.append(prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.4)
                         hits5.append(prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.5)
                     if prop == "HBA+":
                         hits.append(prop_pred > prop_label + task2thres[prop][hit_thres][0])
-                        hits4.append(prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.4)
                         hits5.append(prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.5)
                     if prop == "HBA-":
                         hits.append(prop_pred + task2thres[prop][hit_thres][0] < prop_label)
-                        hits4.append(prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.4)
                         hits5.append(prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.5)
                     if prop == "QED+":
                         hits.append(prop_pred > prop_label + task2thres[prop][hit_thres][0])
-                        hits4.append(prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.4)
                         hits5.append(prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.5)
                     if prop == "QED-":
                         hits.append(prop_pred + task2thres[prop][hit_thres][0] < prop_label)
-                        hits4.append(prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.4)
                         hits5.append(prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.5)
                 except:
                     validities.append(0)
@@ -150,72 +139,56 @@ def get_scores_generation(eval_output, path, tokenizer, data, hit_thres=0):
                     if logp == "LogP+":
                         if prop == "TPSA+":
                             hits.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred > prop_label + task2thres[prop][hit_thres][0])
-                            hits4.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.4)
                             hits5.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.5)
                         if prop == "TPSA-":
                             hits.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred + task2thres[prop][hit_thres][0] < prop_label)
-                            hits4.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.4)
                             hits5.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.5)
                         if prop == "HBD+":
                             hits.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred > prop_label + task2thres[prop][hit_thres][0])
-                            hits4.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.4)
                             hits5.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.5)
                         if prop == "HBD-":
                             hits.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred + task2thres[prop][hit_thres][0] < prop_label)
-                            hits4.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.4)
                             hits5.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.5)
                         if prop == "HBA+":
                             hits.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred > prop_label + task2thres[prop][hit_thres][0])
-                            hits4.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.4)
                             hits5.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.5)
                         if prop == "HBA-":
                             hits.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred + task2thres[prop][hit_thres][0] < prop_label)
-                            hits4.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.4)
                             hits5.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.5)
                         if prop == "QED+":
                             hits.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred > prop_label + task2thres[prop][hit_thres][0])
-                            hits4.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.4)
                             hits5.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.5)
                         if prop == "QED-":
                             hits.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred + task2thres[prop][hit_thres][0] < prop_label)
-                            hits4.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.4)
                             hits5.append(logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.5)
                     if logp == "LogP-":
                         if prop == "TPSA+":
                             hits.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred > prop_label + task2thres[prop][hit_thres][0])
-                            hits4.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.4)
                             hits5.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.5)
                         if prop == "TPSA-":
                             hits.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred + task2thres[prop][hit_thres][0] < prop_label)
-                            hits4.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.4)
                             hits5.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.5)
                         if prop == "HBD+":
                             hits.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred > prop_label + task2thres[prop][hit_thres][0])
-                            hits4.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.4)
                             hits5.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.5)
                         if prop == "HBD-":
                             hits.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred + task2thres[prop][hit_thres][0] < prop_label)
-                            hits4.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.4)
                             hits5.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.5)
                         if prop == "HBA+":
                             hits.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred > prop_label + task2thres[prop][hit_thres][0])
-                            hits4.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.4)
                             hits5.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.5)
                         if prop == "HBA-":
                             hits.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred + task2thres[prop][hit_thres][0] < prop_label)
-                            hits4.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.4)
                             hits5.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.5)
                         if prop == "QED+":
                             hits.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred > prop_label + task2thres[prop][hit_thres][0])
-                            hits4.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.4)
                             hits5.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred > prop_label + task2thres[prop][hit_thres][0] and sim >= 0.5)
                         if prop == "QED-":
                             hits.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred + task2thres[prop][hit_thres][0] < prop_label)
-                            hits4.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.4)
                             hits5.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.5)
                 except:
                     validities.append(0)
-        return 100*sum(hits)/len(validities), 100*sum(hits4)/len(validities), 100*sum(hits5)/len(validities), 100*np.mean(Morgan_sims), 100*sum(validities)/len(validities)
+        return 100*sum(hits)/len(validities), 100*sum(hits5)/len(validities), 100*np.mean(Morgan_sims), 100*sum(validities)/len(validities)
     else:
         pass
 
