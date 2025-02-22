@@ -145,7 +145,6 @@ class BaselineLLM(torch.nn.Module):
         return outputs.loss
 
     def inference(self, samples):
-        self.model = self.model.bfloat16()
         # encode description and prompts
         prompts = self.tokenizer(samples["prompt"], add_special_tokens=False)
 
