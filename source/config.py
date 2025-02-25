@@ -5,7 +5,7 @@ def parse_args_llm():
     parser.add_argument("--project", type=str, default="ARe2DF")
     parser.add_argument("--seed", type=int, default=0)
 
-    # LLM related
+    # Model related
     parser.add_argument("--model_name", type=str, default='baseline_llm')
     parser.add_argument("--llm_model_name", type=str)
     parser.add_argument("--llm_frozen", type=str, default='True')
