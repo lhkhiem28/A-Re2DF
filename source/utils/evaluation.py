@@ -76,14 +76,10 @@ def get_scores_generation(eval_output, path, tokenizer, data, hit_thres=0):
         hits = []
         hits5 = []
         Morgan_sims = []
-        valid_preds, valid_labels = [], []
         if "single" in data:
             for pred, label in tqdm.tqdm(zip(preds, labels)):
                 try:
                     mol_pred, mol_label = Chem.MolFromSmiles(pred), Chem.MolFromSmiles(label)
-                    pred, label = Chem.MolToSmiles(mol_pred, isomericSmiles=False, canonical=True), Chem.MolToSmiles(mol_label, isomericSmiles=False, canonical=True)
-                    valid_preds.append(pred), valid_labels.append(label)
-                    inchi_pred, inchi_label = Chem.MolToInchi(mol_pred), Chem.MolToInchi(mol_label)
                     validities.append(1)
 
                     sim = DataStructs.TanimotoSimilarity(AllChem.GetMorganFingerprint(mol_pred, 2), AllChem.GetMorganFingerprint(mol_label, 2))
@@ -127,9 +123,6 @@ def get_scores_generation(eval_output, path, tokenizer, data, hit_thres=0):
             for pred, label in tqdm.tqdm(zip(preds, labels)):
                 try:
                     mol_pred, mol_label = Chem.MolFromSmiles(pred), Chem.MolFromSmiles(label)
-                    pred, label = Chem.MolToSmiles(mol_pred, isomericSmiles=False, canonical=True), Chem.MolToSmiles(mol_label, isomericSmiles=False, canonical=True)
-                    valid_preds.append(pred), valid_labels.append(label)
-                    inchi_pred, inchi_label = Chem.MolToInchi(mol_pred), Chem.MolToInchi(mol_label)
                     validities.append(1)
 
                     sim = DataStructs.TanimotoSimilarity(AllChem.GetMorganFingerprint(mol_pred, 2), AllChem.GetMorganFingerprint(mol_label, 2))
