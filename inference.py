@@ -579,11 +579,11 @@ def main(args):
         ))
         if args.prompting == "react":
             print("Coding Error: {:05.2f}%".format(
-                100*(code_error/code)
+                99.99*(code_error/code)
             ))
     elif "MModify" in args.data:
         print("Hit: {:05.2f} Hit@0.5: {:05.2f} Morgan-FTS: {:05.2f} Validity: {:05.2f} Validity check: {:05.2f}".format(
-            *scores, 100*validity_work/total_work
+            *scores, 99.99*validity_work/total_work
         ))
     else:
         pass

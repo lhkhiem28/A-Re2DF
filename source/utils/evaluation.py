@@ -181,7 +181,7 @@ def get_scores_generation(eval_output, path, tokenizer, data, hit_thres=0):
                             hits5.append(logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred + task2thres[prop][hit_thres][0] < prop_label and sim >= 0.5)
                 except:
                     validities.append(0)
-        return 100*sum(hits)/len(validities), 100*sum(hits5)/len(validities), 100*np.mean(Morgan_sims), 100*sum(validities)/len(validities)
+        return 99.99*sum(hits)/len(validities), 99.99*sum(hits5)/len(validities), 99.99*np.mean(Morgan_sims), 99.99*sum(validities)/len(validities)
     else:
         pass
 
