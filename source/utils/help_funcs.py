@@ -17,17 +17,13 @@ def collate_fn(original_batch):
         batch[k] = [d[k] for d in original_batch]
     return batch
 
-def listize_fn(original_batch):
-    batch = {}
-    for k in original_batch.keys():
-        batch[k] = [original_batch[k]]
-    return batch
-
-def _save_checkpoint(model, optimizer, cur_epoch, args, is_best=False):
+def _save_checkpoint(model, cur_epoch, args, is_best=False):
     """
     Save the checkpoint at the current epoch.
     """
     os.makedirs(f'{args.output_dir}/{args.split}/{args.data}', exist_ok=True)
+    path = f'{args.output_dir}/{args.split}/{args.data}/{args.model_name}_{args.llm_model_name}_llm_frozen{args.llm_frozen}_{args.num_epochs}epochs_lr{args.lr}_{args.split}_{"best" if is_best else cur_epoch}_{args.run_name}.pth'
+    print("Saving checkpoint at epoch {} to {}".format(cur_epoch, path))
 
     param_grad_dic = {
         name: param.requires_grad for (name, param) in model.named_parameters()
@@ -35,16 +31,11 @@ def _save_checkpoint(model, optimizer, cur_epoch, args, is_best=False):
     state_dict = model.state_dict()
     for k in list(state_dict.keys()):
         if k in param_grad_dic.keys() and not param_grad_dic[k]:
-            # delete parameters that do not require gradient
             del state_dict[k]
     save_obj = {
         "model": state_dict,
-        "optimizer": optimizer.state_dict(),
         "config": args,
-        "epoch": cur_epoch,
     }
-    path = f'{args.output_dir}/{args.split}/{args.data}/{args.model_name}_{args.llm_model_name}_llm_frozen{args.llm_frozen}_{args.num_epochs}epochs_lr{args.lr}_{args.split}_{"best" if is_best else cur_epoch}_{args.run_name}.pth'
-    print("Saving checkpoint at epoch {} to {}".format(cur_epoch, path))
     torch.save(save_obj, path)
 
 def _reload_model(model, checkpoint_path, strict=False):

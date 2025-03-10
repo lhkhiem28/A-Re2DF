@@ -8,9 +8,9 @@
 conda activate LLM
 bash inference.sh 'llama-3.2-1b' "+" "None"
 bash inference.sh 'llama-3.2-1b' "+" "self"
-bash inference.sh 'llama-3.2-1b' "+" "retrieve"
-bash inference.sh 'llama-3.2-1b' "+" "molt-retrieve"
+bash inference.sh 'llama-3.2-1b' "+" "redf"
+bash inference.sh 'llama-3.2-1b' "+" "re2df"
 bash inference.sh 'llama-3.2-3b' "+" "None"
 bash inference.sh 'llama-3.2-3b' "+" "self"
-bash inference.sh 'llama-3.2-3b' "+" "retrieve"
-bash inference.sh 'llama-3.2-3b' "+" "molt-retrieve"
+bash inference.sh 'llama-3.2-3b' "+" "redf"
+bash inference.sh 'llama-3.2-3b' "+" "re2df"

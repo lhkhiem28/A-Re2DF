@@ -1,8 +1,8 @@
 import contextlib
 import torch
 from torch.cuda.amp import autocast as autocast
-from transformers import AutoTokenizer, T5Tokenizer
-from transformers import AutoModelForCausalLM, T5ForConditionalGeneration
+from transformers import AutoTokenizer
+from transformers import AutoModelForCausalLM
 from peft import (
     LoraConfig,
     get_peft_model,
@@ -22,11 +22,6 @@ class BaselineLLM(torch.nn.Module):
             self.EOS_USER = '<|eot_id|><|start_header_id|>assistant<|end_header_id|>'
             self.EOS = '<|end_of_text|>'
             self.IGNORE_INDEX = -100
-        if "Qwen2.5" in args.llm_model_path or "SmolLM2" in args.llm_model_path:
-            self.BOS = '<|im_start|>user\n'
-            self.EOS_USER = '<|im_end|>\n<|im_start|>assistant\n'
-            self.EOS = '<|im_end|>'
-            self.IGNORE_INDEX = -100
 
         print(f'Loading {args.llm_model_path}')
         kwargs = {
@@ -34,24 +29,16 @@ class BaselineLLM(torch.nn.Module):
             "device_map": "auto",
             "revision": "main",
         }
-        if "t5" not in args.llm_model_name:
-            self.tokenizer = AutoTokenizer.from_pretrained(args.llm_model_path, use_fast=False, revision=kwargs["revision"])
-            self.tokenizer.pad_token_id = 0
-            self.tokenizer.padding_side = 'left'
-            model = AutoModelForCausalLM.from_pretrained(
-                args.llm_model_path,
-                torch_dtype=torch.float16,
-                low_cpu_mem_usage=True,
-                **kwargs
-            )
-        else:
-            self.tokenizer = T5Tokenizer.from_pretrained(args.llm_model_path, legacy=False)
-            model = T5ForConditionalGeneration.from_pretrained(
-                args.llm_model_path,
-                **kwargs
-            )
+        self.tokenizer = AutoTokenizer.from_pretrained(args.llm_model_path, use_fast=False, revision=kwargs["revision"])
+        self.tokenizer.pad_token_id = 0
+        self.tokenizer.padding_side = 'left'
+        model = AutoModelForCausalLM.from_pretrained(
+            args.llm_model_path,
+            torch_dtype=torch.float16,
+            low_cpu_mem_usage=True,
+            **kwargs
+        )
 
-        self.llm_frozen = args.llm_frozen
         if args.llm_frozen == 'True':
             print(f"{args.llm_model_path} has been frozen!")
             for name, param in model.named_parameters():
@@ -73,8 +60,7 @@ class BaselineLLM(torch.nn.Module):
             )
             model = get_peft_model(model, config)
         self.model = model
-        if "t5" not in args.llm_model_name:
-            self.word_embedding = self.model.model.get_input_embeddings()
+        self.word_embedding = self.model.model.get_input_embeddings()
 
     @property
     def device(self):
@@ -125,10 +111,7 @@ class BaselineLLM(torch.nn.Module):
             batch_attention_mask[i] = [0]*pad_length + batch_attention_mask[i]
             batch_label_input_ids[i] = [self.IGNORE_INDEX] * pad_length+batch_label_input_ids[i]
 
-        if self.llm_frozen == 'True':
-            inputs_embeds = torch.stack(batch_inputs_embeds, dim=0).to(self.model.device).to(torch.float16)
-        else:
-            inputs_embeds = torch.stack(batch_inputs_embeds, dim=0).to(self.model.device)
+        inputs_embeds = torch.stack(batch_inputs_embeds, dim=0).to(self.model.device)
         attention_mask = torch.tensor(batch_attention_mask).to(self.model.device)
         label_input_ids = torch.tensor(batch_label_input_ids).to(self.model.device)
 
@@ -170,7 +153,7 @@ class BaselineLLM(torch.nn.Module):
             batch_inputs_embeds[i] = torch.cat([pad_embeds.repeat(pad_length, 1), batch_inputs_embeds[i]])
             batch_attention_mask[i] = [0]*pad_length + batch_attention_mask[i]
 
-        inputs_embeds = torch.stack(batch_inputs_embeds, dim=0).to(self.model.device).to(torch.bfloat16)
+        inputs_embeds = torch.stack(batch_inputs_embeds, dim=0).to(self.model.device)
         attention_mask = torch.tensor(batch_attention_mask).to(self.model.device)
 
         with self.maybe_autocast():
@@ -182,9 +165,10 @@ class BaselineLLM(torch.nn.Module):
                 use_cache=True  # IMPORTANT!
             )
         pred = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
+        pred = [p.strip() for p in pred]
 
         return {'id': samples['id'],
-                'pred': [p.strip() for p in pred],
+                'pred': pred,
                 'label': samples['smiles'],
         }
 
