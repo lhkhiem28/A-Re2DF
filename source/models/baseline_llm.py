@@ -17,6 +17,11 @@ class BaselineLLM(torch.nn.Module):
     ):
         super().__init__()
         self.max_new_tokens = args.max_new_tokens
+        if "SmolLM2" in args.llm_model_path or "Qwen2.5" in args.llm_model_path:
+            self.BOS = '<|im_start|>user\n'
+            self.EOS_USER = '<|im_end|>\n<|im_start|>assistant\n'
+            self.EOS = '<|im_end|>'
+            self.IGNORE_INDEX = -100
         if "Llama-3" in args.llm_model_path:
             self.BOS = '<|begin_of_text|><|start_header_id|>user<|end_header_id|>'
             self.EOS_USER = '<|eot_id|><|start_header_id|>assistant<|end_header_id|>'
