@@ -44,7 +44,7 @@ def _reload_model(model, checkpoint_path, strict=False):
     """
     print("Loading checkpoint from {}.".format(checkpoint_path))
 
-    checkpoint = torch.load(checkpoint_path, map_location="cpu")
+    checkpoint = torch.load(checkpoint_path, weights_only=False, map_location="cpu")
     model.load_state_dict(checkpoint["model"], strict=strict)
 
     return model
