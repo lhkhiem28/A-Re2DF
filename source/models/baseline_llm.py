@@ -6,7 +6,6 @@ from transformers import AutoModelForCausalLM
 from peft import (
     LoraConfig,
     get_peft_model,
-    prepare_model_for_int8_training,
 )
 
 class BaselineLLM(torch.nn.Module):
@@ -50,7 +49,6 @@ class BaselineLLM(torch.nn.Module):
                 param.requires_grad = False
         else:
             print(f"{args.llm_model_path} has been factorized for training!")
-            model = prepare_model_for_int8_training(model)
             lora_r: int = args.lora_r
             lora_alpha: int = 16
             lora_dropout: float = 0.1

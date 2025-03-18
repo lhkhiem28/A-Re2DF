@@ -51,7 +51,7 @@ def main(args):
     if args.checkpoint_path is not None:
         model = _reload_model(model, args.checkpoint_path)
 
-    # Step 3. Evaluating
+    # Step 3: Evaluating
     model.eval()
     eval_output = []
     progress_bar_test = tqdm.tqdm(range(len(test_dataset)))
@@ -494,7 +494,7 @@ def main(args):
 
         progress_bar_test.update(1)
 
-    # Step 4. Post-processing & Evaluating
+    # Step 4: Post-processing & Evaluating
     os.makedirs(f'{args.output_dir}/inference/{args.data}', exist_ok=True)
     path = f'{args.output_dir}/inference/{args.data}/{args.model_name}_{args.llm_model_name}_llm_frozen{args.llm_frozen}_{args.split}_{args.refine}_refine_steps{args.refine_steps}_{args.hit_thres}.csv'
     scores = eval_funcs[args.dataset](eval_output, path, args.data, 
