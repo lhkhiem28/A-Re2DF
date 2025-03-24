@@ -201,7 +201,7 @@ def main(args):
                             break
                     else:
                         eval_output.append(output)
-            elif args.refine == "re2df":
+            elif args.refine == "are2df":
                 prop = args.data.split("/")[-1]
                 ori_prompt = batch['prompt']
                 max_steps = args.refine_steps + 1
@@ -348,7 +348,7 @@ def main(args):
                         batch['prompt'] = ori_prompt + output["pred"][0] + f"\n\nImprove the modified molecule based on the following feedback:\n{feedback_output}\nRespond with only the SMILES string of your modified molecule. No explanation is needed."
                     else:
                         eval_output.append(output)
-            elif args.refine == "re2df-2":
+            elif args.refine == "are2df-e":
                 prop = args.data.split("/")[-1]
                 ori_prompt = batch['prompt']
                 max_steps = args.refine_steps + 1
