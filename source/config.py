@@ -1,8 +1,8 @@
 import argparse
 
 def parse_args_llm():
-    parser = argparse.ArgumentParser(description="ARe2DF")
-    parser.add_argument("--project", type=str, default="ARe2DF")
+    parser = argparse.ArgumentParser(description="A-Re2DF")
+    parser.add_argument("--project", type=str, default="A-Re2DF")
     parser.add_argument("--seed", type=int, default=0)
 
     # Model related
@@ -14,7 +14,7 @@ def parse_args_llm():
 
     # Model Training
     parser.add_argument("--dataset", type=str, default='generation')
-    parser.add_argument("--path", type=str, default='../ARe2DF-datasets')
+    parser.add_argument("--path", type=str, default='../A-Re2DF-datasets')
     parser.add_argument("--data", type=str)
     parser.add_argument("--split", type=str, default="train")
     parser.add_argument("--hit_thres", type=int)
