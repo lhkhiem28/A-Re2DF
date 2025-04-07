@@ -1,0 +1,10 @@
+#!/bin/bash
+#$ -M kle3@nd.edu
+#$ -m be
+#$ -pe smp 8
+#$ -q gpu@@lucy_a100
+#$ -l gpu=2
+#$ -N train-3b
+conda activate LLM-2
+python train~.py --llm_model_name 'qwen2.5-3b' --llm_frozen 'False' --hit_thres 0 --run_name "~"
+python train~.py --llm_model_name 'qwen2.5-3b' --llm_frozen 'False' --hit_thres 1 --run_name "~"

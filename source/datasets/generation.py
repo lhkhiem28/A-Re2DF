@@ -32,10 +32,11 @@ class DatasetGeneration(Dataset):
                     self.questions["Text"] = self.questions["Text"].apply(lambda s: s.replace("LogP value", f'LogP value by at least {task2thres[logp][hit_thres][0]}').replace(". The modified molecule should be similar to the original one.", f' by at least {task2thres[prop][hit_thres][0]}. The modified molecule should be similar to the original one.'))
 
         self.data = data
+        self.hit_thres = hit_thres
         self.use_DB = use_DB
         if self.use_DB:
             self.DB["Text"] = self.questions["Text"].unique()[0]
-            self.questions = self.DB
+            self.questions = self.DB.sample(frac=0.1, random_state=0).reset_index(drop=True)
 
     def __len__(self):
         """Return the len of the dataset."""
@@ -49,6 +50,7 @@ class DatasetGeneration(Dataset):
             return {
                 'id': index,
                 'data': self.data,
+                'hit_thres': self.hit_thres,
                 'smiles': item["SMILES"],
                 'prompt': f'{question}\n\nMolecule:{item["SMILES"]}\nAnswer:',
             }
