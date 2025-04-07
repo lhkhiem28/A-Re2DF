@@ -39,6 +39,81 @@ for prop, func in prop_pred:
     prop2func[prop] = func
 task2func = {k:prop2func[task2prop[k]] for k in task2prop.keys()}
 
+def is_met(pred, label, data, hit_thres=0):
+    prop = data.split("/")[-1]
+
+    if "single" in data:
+        try:
+            mol_pred, mol_label = Chem.MolFromSmiles(pred), Chem.MolFromSmiles(label)
+
+            sim = DataStructs.TanimotoSimilarity(AllChem.GetMorganFingerprint(mol_pred, 2), AllChem.GetMorganFingerprint(mol_label, 2))
+            prop_pred, prop_label = task2func[prop](mol_pred), task2func[prop](mol_label)
+            if prop == "LogP+":
+                return 1, prop_pred > prop_label + task2thres[prop][hit_thres][0]
+            if prop == "LogP-":
+                return 1, prop_pred + task2thres[prop][hit_thres][0] < prop_label
+            if prop == "TPSA+":
+                return 1, prop_pred > prop_label + task2thres[prop][hit_thres][0]
+            if prop == "TPSA-":
+                return 1, prop_pred + task2thres[prop][hit_thres][0] < prop_label
+            if prop == "HBD+":
+                return 1, prop_pred > prop_label + task2thres[prop][hit_thres][0]
+            if prop == "HBD-":
+                return 1, prop_pred + task2thres[prop][hit_thres][0] < prop_label
+            if prop == "HBA+":
+                return 1, prop_pred > prop_label + task2thres[prop][hit_thres][0]
+            if prop == "HBA-":
+                return 1, prop_pred + task2thres[prop][hit_thres][0] < prop_label
+            if prop == "QED+":
+                return 1, prop_pred > prop_label + task2thres[prop][hit_thres][0]
+            if prop == "QED-":
+                return 1, prop_pred + task2thres[prop][hit_thres][0] < prop_label
+        except:
+            return 0, 0
+    if "multi" in data:
+        logp, prop = prop[:5], prop[5:]
+        try:
+            mol_pred, mol_label = Chem.MolFromSmiles(pred), Chem.MolFromSmiles(label)
+
+            sim = DataStructs.TanimotoSimilarity(AllChem.GetMorganFingerprint(mol_pred, 2), AllChem.GetMorganFingerprint(mol_label, 2))
+            logp_pred, logp_label, prop_pred, prop_label = task2func[logp](mol_pred), task2func[logp](mol_label), task2func[prop](mol_pred), task2func[prop](mol_label)
+            if logp == "LogP+":
+                if prop == "TPSA+":
+                    return 1, logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred > prop_label + task2thres[prop][hit_thres][0]
+                if prop == "TPSA-":
+                    return 1, logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred + task2thres[prop][hit_thres][0] < prop_label
+                if prop == "HBD+":
+                    return 1, logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred > prop_label + task2thres[prop][hit_thres][0]
+                if prop == "HBD-":
+                    return 1, logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred + task2thres[prop][hit_thres][0] < prop_label
+                if prop == "HBA+":
+                    return 1, logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred > prop_label + task2thres[prop][hit_thres][0]
+                if prop == "HBA-":
+                    return 1, logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred + task2thres[prop][hit_thres][0] < prop_label
+                if prop == "QED+":
+                    return 1, logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred > prop_label + task2thres[prop][hit_thres][0]
+                if prop == "QED-":
+                    return 1, logp_pred > logp_label + task2thres[logp][hit_thres][0] and prop_pred + task2thres[prop][hit_thres][0] < prop_label
+            if logp == "LogP-":
+                if prop == "TPSA+":
+                    return 1, logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred > prop_label + task2thres[prop][hit_thres][0]
+                if prop == "TPSA-":
+                    return 1, logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred + task2thres[prop][hit_thres][0] < prop_label
+                if prop == "HBD+":
+                    return 1, logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred > prop_label + task2thres[prop][hit_thres][0]
+                if prop == "HBD-":
+                    return 1, logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred + task2thres[prop][hit_thres][0] < prop_label
+                if prop == "HBA+":
+                    return 1, logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred > prop_label + task2thres[prop][hit_thres][0]
+                if prop == "HBA-":
+                    return 1, logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred + task2thres[prop][hit_thres][0] < prop_label
+                if prop == "QED+":
+                    return 1, logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred > prop_label + task2thres[prop][hit_thres][0]
+                if prop == "QED-":
+                    return 1, logp_pred + task2thres[logp][hit_thres][0] < logp_label and prop_pred + task2thres[prop][hit_thres][0] < prop_label
+        except:
+            return 0, 0
+
 def get_scores_generation(eval_output, path, data, hit_thres=0):
     prop = data.split("/")[-1]
 

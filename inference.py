@@ -42,7 +42,7 @@ def main(args):
 
     # Step 1: Build Dataset
     test_dataset = load_dataset[args.dataset](path = args.path, data = args.data, split = "test", 
-        hit_thres = args.hit_thres
+        hit_thres = args.hit_thres, 
     )
 
     # Step 2: Build Model
@@ -784,7 +784,7 @@ def main(args):
     os.makedirs(f'{args.output_dir}/inference/{args.data}', exist_ok=True)
     path = f'{args.output_dir}/inference/{args.data}/{args.model_name}_{args.llm_model_name}_llm_frozen{args.llm_frozen}_{args.split}_{args.refine}_refine_steps{args.refine_steps}_{args.hit_thres}.csv'
     scores = eval_funcs[args.dataset](eval_output, path, args.data, 
-        hit_thres = args.hit_thres
+        hit_thres = args.hit_thres, 
     )
     print("Hit: {:05.2f} Hit@0.5: {:05.2f} Morgan-FTS: {:05.2f} Validity: {:05.2f} Validity check: {:05.2f}".format(
         *scores, 99.99*validity_work/total_work
