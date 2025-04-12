@@ -8,8 +8,6 @@
 conda activate LLM-2
 bash inference.sh 'qwen2.5-3b' "None"   0
 bash inference.sh 'qwen2.5-3b' "None"   1
-bash inference.sh 'qwen2.5-3b' "self"   0
-bash inference.sh 'qwen2.5-3b' "self"   1
 bash inference.sh 'qwen2.5-3b' "redf"   0
 bash inference.sh 'qwen2.5-3b' "redf"   1
 bash inference.sh 'qwen2.5-3b' "are2df" 0
