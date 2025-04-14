@@ -24,7 +24,7 @@ def parse_args_llm():
     parser.add_argument("--num_epochs", type=int, default=10)
 
     # Inference
-    parser.add_argument("--max_new_tokens", type=int, default=512)
+    parser.add_argument("--max_new_tokens", type=int, default=256)
     parser.add_argument("--refine", type=str, default="None")
     parser.add_argument("--refine_steps", type=int)
 
