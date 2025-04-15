@@ -1,7 +1,7 @@
 import os
 import tqdm
 import torch
-from torch.utils.data import ConcatDataset, DataLoader
+from torch.utils.data import DataLoader
 from datasets import Dataset
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -21,87 +21,10 @@ def main(args):
     os.environ["WANDB_PROJECT"]=f"{args.project}~"
 
     # Step 1: Build Dataset
-    train_dataset_list = []
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/single/LogP+", split = "test", 
+    train_dataset = load_dataset[args.dataset](path = args.path, data = args.data, split = "test", 
         hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/single/LogP-", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/single/TPSA+", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/single/TPSA-", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/single/HBD+", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/single/HBD-", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/single/HBA+", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/single/HBA-", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/single/QED+", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/single/QED-", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/multi/LogP+TPSA+", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/multi/LogP+TPSA-", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/multi/LogP-TPSA+", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/multi/LogP-TPSA-", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/multi/LogP+HBD+", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/multi/LogP+HBD-", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/multi/LogP-HBD+", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/multi/LogP-HBD-", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/multi/LogP+HBA+", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/multi/LogP+HBA-", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/multi/LogP-HBA+", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/multi/LogP-HBA-", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/multi/LogP+QED+", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/multi/LogP+QED-", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/multi/LogP-QED+", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset_list.append(load_dataset[args.dataset](path = args.path, data = "MGen/MModify/ZINC500/multi/LogP-QED-", split = "test", 
-        hit_thres = args.hit_thres, use_DB = True
-    ))
-    train_dataset = Dataset.from_list(ConcatDataset(train_dataset_list))
-    train_dataset = train_dataset.shuffle(seed=seed)
+    )
+    train_dataset = Dataset.from_list(train_dataset)
 
     # Step 2: Build Model and Optimizer
     args.llm_model_path = get_llm_model_path[args.llm_model_name]
@@ -139,7 +62,7 @@ def main(args):
         # gradient_checkpointing=True,
         # gradient_accumulation_steps=4,
         num_train_epochs=1,
-        per_device_train_batch_size=16,
+        per_device_train_batch_size=24,
 
         report_to="wandb",
         run_name=f"{args.model_name}_lora_r{args.lora_r}_{args.llm_model_name}_{args.run_name}_{args.hit_thres}",
