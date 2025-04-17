@@ -202,6 +202,121 @@ def main(args):
                             break
                     else:
                         eval_output.append(output)
+            elif args.refine == "redf-e":
+                prop = args.data.split("/")[-1]
+                ori_prompt = batch['prompt']
+                max_steps = args.refine_steps
+                for i in range(1, max_steps + 1):
+                    total_work += 1
+                    output = model.inference(listize_fn(batch))
+                    output["pred"] = [p.strip() if "->" not in p else p.split('->')[1].strip() for p in output["pred"]]
+                    output["pred"] = [p.strip() if "becomes" not in p else p.split('becomes')[1].strip() for p in output["pred"]]
+                    if i < max_steps:
+                        try:
+                            input_mol = Chem.MolFromSmiles(batch["smiles"])
+                            output_mol = Chem.MolFromSmiles(output["pred"][0])
+                            if output_mol is None:
+                                eval_output.append(output)
+                                break
+                            else:
+                                if "single" in args.data:
+                                    input_prop = task2func[prop](input_mol)
+                                    output_prop = task2func[prop](output_mol)
+                                    if prop == "LogP+":
+                                        hit = output_prop > input_prop + task2thres[prop][args.hit_thres][0]
+                                        DB = test_dataset.DB[test_dataset.DB["prop"] > input_prop + task2thres[prop][args.hit_thres][0]]
+                                    if prop == "LogP-":
+                                        hit = output_prop + task2thres[prop][args.hit_thres][0] < input_prop
+                                        DB = test_dataset.DB[test_dataset.DB["prop"] + task2thres[prop][args.hit_thres][0] < input_prop]
+                                    if prop == "TPSA+":
+                                        hit = output_prop > input_prop + task2thres[prop][args.hit_thres][0]
+                                        DB = test_dataset.DB[test_dataset.DB["prop"] > input_prop + task2thres[prop][args.hit_thres][0]]
+                                    if prop == "TPSA-":
+                                        hit = output_prop + task2thres[prop][args.hit_thres][0] < input_prop
+                                        DB = test_dataset.DB[test_dataset.DB["prop"] + task2thres[prop][args.hit_thres][0] < input_prop]
+                                    if prop == "HBD+":
+                                        hit = output_prop > input_prop + task2thres[prop][args.hit_thres][0]
+                                        DB = test_dataset.DB[test_dataset.DB["prop"] > input_prop + task2thres[prop][args.hit_thres][0]]
+                                    if prop == "HBD-":
+                                        hit = output_prop + task2thres[prop][args.hit_thres][0] < input_prop
+                                        DB = test_dataset.DB[test_dataset.DB["prop"] + task2thres[prop][args.hit_thres][0] < input_prop]
+                                    if prop == "HBA+":
+                                        hit = output_prop > input_prop + task2thres[prop][args.hit_thres][0]
+                                        DB = test_dataset.DB[test_dataset.DB["prop"] > input_prop + task2thres[prop][args.hit_thres][0]]
+                                    if prop == "HBA-":
+                                        hit = output_prop + task2thres[prop][args.hit_thres][0] < input_prop
+                                        DB = test_dataset.DB[test_dataset.DB["prop"] + task2thres[prop][args.hit_thres][0] < input_prop]
+                                    if prop == "QED+":
+                                        hit = output_prop > input_prop + task2thres[prop][args.hit_thres][0]
+                                        DB = test_dataset.DB[test_dataset.DB["prop"] > input_prop + task2thres[prop][args.hit_thres][0]]
+                                    if prop == "QED-":
+                                        hit = output_prop + task2thres[prop][args.hit_thres][0] < input_prop
+                                        DB = test_dataset.DB[test_dataset.DB["prop"] + task2thres[prop][args.hit_thres][0] < input_prop]
+                                if "multi" in args.data:
+                                    logp, prop = prop[:5], prop[5:]
+                                    input_logp, input_prop = task2func[logp](input_mol), task2func[prop](input_mol)
+                                    output_logp, output_prop = task2func[logp](output_mol), task2func[prop](output_mol)
+                                    if logp == "LogP+":
+                                        if prop == "TPSA+":
+                                            hit = output_logp > input_logp + task2thres[logp][args.hit_thres][0] and output_prop > input_prop + task2thres[prop][args.hit_thres][0]
+                                            DB = test_dataset.DB[(test_dataset.DB["logp"] > input_logp + task2thres[logp][args.hit_thres][0]) & (test_dataset.DB["prop"] > input_prop + task2thres[prop][args.hit_thres][0])]
+                                        if prop == "TPSA-":
+                                            hit = output_logp > input_logp + task2thres[logp][args.hit_thres][0] and output_prop + task2thres[prop][args.hit_thres][0] < input_prop
+                                            DB = test_dataset.DB[(test_dataset.DB["logp"] > input_logp + task2thres[logp][args.hit_thres][0]) & test_dataset.DB["prop"] + task2thres[prop][args.hit_thres][0] < input_prop]
+                                        if prop == "HBD+":
+                                            hit = output_logp > input_logp + task2thres[logp][args.hit_thres][0] and output_prop > input_prop + task2thres[prop][args.hit_thres][0]
+                                            DB = test_dataset.DB[(test_dataset.DB["logp"] > input_logp + task2thres[logp][args.hit_thres][0]) & (test_dataset.DB["prop"] > input_prop + task2thres[prop][args.hit_thres][0])]
+                                        if prop == "HBD-":
+                                            hit = output_logp > input_logp + task2thres[logp][args.hit_thres][0] and output_prop + task2thres[prop][args.hit_thres][0] < input_prop
+                                            DB = test_dataset.DB[(test_dataset.DB["logp"] > input_logp + task2thres[logp][args.hit_thres][0]) & test_dataset.DB["prop"] + task2thres[prop][args.hit_thres][0] < input_prop]
+                                        if prop == "HBA+":
+                                            hit = output_logp > input_logp + task2thres[logp][args.hit_thres][0] and output_prop > input_prop + task2thres[prop][args.hit_thres][0]
+                                            DB = test_dataset.DB[(test_dataset.DB["logp"] > input_logp + task2thres[logp][args.hit_thres][0]) & (test_dataset.DB["prop"] > input_prop + task2thres[prop][args.hit_thres][0])]
+                                        if prop == "HBA-":
+                                            hit = output_logp > input_logp + task2thres[logp][args.hit_thres][0] and output_prop + task2thres[prop][args.hit_thres][0] < input_prop
+                                            DB = test_dataset.DB[(test_dataset.DB["logp"] > input_logp + task2thres[logp][args.hit_thres][0]) & test_dataset.DB["prop"] + task2thres[prop][args.hit_thres][0] < input_prop]
+                                        if prop == "QED+":
+                                            hit = output_logp > input_logp + task2thres[logp][args.hit_thres][0] and output_prop > input_prop + task2thres[prop][args.hit_thres][0]
+                                            DB = test_dataset.DB[(test_dataset.DB["logp"] > input_logp + task2thres[logp][args.hit_thres][0]) & (test_dataset.DB["prop"] > input_prop + task2thres[prop][args.hit_thres][0])]
+                                        if prop == "QED-":
+                                            hit = output_logp > input_logp + task2thres[logp][args.hit_thres][0] and output_prop + task2thres[prop][args.hit_thres][0] < input_prop
+                                            DB = test_dataset.DB[(test_dataset.DB["logp"] > input_logp + task2thres[logp][args.hit_thres][0]) & test_dataset.DB["prop"] + task2thres[prop][args.hit_thres][0] < input_prop]
+                                    if logp == "LogP-":
+                                        if prop == "TPSA+":
+                                            hit = output_logp + task2thres[logp][args.hit_thres][0] < input_logp and output_prop > input_prop + task2thres[prop][args.hit_thres][0]
+                                            DB = test_dataset.DB[(test_dataset.DB["logp"] + task2thres[logp][args.hit_thres][0] < input_logp) & (test_dataset.DB["prop"] > input_prop + task2thres[prop][args.hit_thres][0])]
+                                        if prop == "TPSA-":
+                                            hit = output_logp + task2thres[logp][args.hit_thres][0] < input_logp and output_prop + task2thres[prop][args.hit_thres][0] < input_prop
+                                            DB = test_dataset.DB[(test_dataset.DB["logp"] + task2thres[logp][args.hit_thres][0] < input_logp) & test_dataset.DB["prop"] + task2thres[prop][args.hit_thres][0] < input_prop]
+                                        if prop == "HBD+":
+                                            hit = output_logp + task2thres[logp][args.hit_thres][0] < input_logp and output_prop > input_prop + task2thres[prop][args.hit_thres][0]
+                                            DB = test_dataset.DB[(test_dataset.DB["logp"] + task2thres[logp][args.hit_thres][0] < input_logp) & (test_dataset.DB["prop"] > input_prop + task2thres[prop][args.hit_thres][0])]
+                                        if prop == "HBD-":
+                                            hit = output_logp + task2thres[logp][args.hit_thres][0] < input_logp and output_prop + task2thres[prop][args.hit_thres][0] < input_prop
+                                            DB = test_dataset.DB[(test_dataset.DB["logp"] + task2thres[logp][args.hit_thres][0] < input_logp) & test_dataset.DB["prop"] + task2thres[prop][args.hit_thres][0] < input_prop]
+                                        if prop == "HBA+":
+                                            hit = output_logp + task2thres[logp][args.hit_thres][0] < input_logp and output_prop > input_prop + task2thres[prop][args.hit_thres][0]
+                                            DB = test_dataset.DB[(test_dataset.DB["logp"] + task2thres[logp][args.hit_thres][0] < input_logp) & (test_dataset.DB["prop"] > input_prop + task2thres[prop][args.hit_thres][0])]
+                                        if prop == "HBA-":
+                                            hit = output_logp + task2thres[logp][args.hit_thres][0] < input_logp and output_prop + task2thres[prop][args.hit_thres][0] < input_prop
+                                            DB = test_dataset.DB[(test_dataset.DB["logp"] + task2thres[logp][args.hit_thres][0] < input_logp) & test_dataset.DB["prop"] + task2thres[prop][args.hit_thres][0] < input_prop]
+                                        if prop == "QED+":
+                                            hit = output_logp + task2thres[logp][args.hit_thres][0] < input_logp and output_prop > input_prop + task2thres[prop][args.hit_thres][0]
+                                            DB = test_dataset.DB[(test_dataset.DB["logp"] + task2thres[logp][args.hit_thres][0] < input_logp) & (test_dataset.DB["prop"] > input_prop + task2thres[prop][args.hit_thres][0])]
+                                        if prop == "QED-":
+                                            hit = output_logp + task2thres[logp][args.hit_thres][0] < input_logp and output_prop + task2thres[prop][args.hit_thres][0] < input_prop
+                                            DB = test_dataset.DB[(test_dataset.DB["logp"] + task2thres[logp][args.hit_thres][0] < input_logp) & test_dataset.DB["prop"] + task2thres[prop][args.hit_thres][0] < input_prop]
+                                if hit:
+                                    eval_output.append(output)
+                                    break
+                                else:
+                                    feedback_output = "The provided molecule is not correct. "
+                                    batch['prompt'] = ori_prompt + output["pred"][0] + f"\n{feedback_output}Can you give me a new molecule?\nRespond with only the SMILES string of your new molecule. No explanation is needed."
+                        except:
+                            eval_output.append(output)
+                            break
+                    else:
+                        eval_output.append(output)
             elif args.refine == "re2df":
                 prop = args.data.split("/")[-1]
                 ori_prompt = batch['prompt']
