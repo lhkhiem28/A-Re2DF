@@ -192,10 +192,11 @@ def main(args):
                                     eval_output.append(output)
                                     break
                                 else:
+                                    feedback_output = "The provided molecule is not correct. "
                                     DB["sim"] = DB["mol"].apply(lambda m: DataStructs.TanimotoSimilarity(AllChem.GetMorganFingerprint(output_mol, 2), AllChem.GetMorganFingerprint(m, 2)))
                                     example = DB.sort_values(by=['sim'], ascending=False).iloc[0]["SMILES"]
-                                    feedback_output = f"The provided molecule is not correct. We find a molecule {example} which is correct and similar to the provided molecule. Can you give me a new molecule?"
-                                    batch['prompt'] = ori_prompt + output["pred"][0] + f"\n{feedback_output}\nRespond with only the SMILES string of your new molecule. No explanation is needed."
+                                    feedback_output += f"We find a molecule {example} which is correct and similar to the provided molecule. "
+                                    batch['prompt'] = ori_prompt + output["pred"][0] + f"\n{feedback_output}Can you give me a new molecule?\nRespond with only the SMILES string of your new molecule. No explanation is needed."
                         except:
                             eval_output.append(output)
                             break
